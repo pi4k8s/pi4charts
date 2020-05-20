@@ -1,0 +1,6 @@
+gogs:
+  enabled: false
+nexus:
+  enabled: false
+jenkins:
+  enabled: false

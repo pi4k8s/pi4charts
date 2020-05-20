@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "gogs.fullname" . }}
+     {{- with .Values.image.annotations }}
+  annotations:
+{{ toYaml . | indent 8 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "gogs.name" . }}
+    helm.sh/chart: {{ include "gogs.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "gogs.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: {{ template "gogs.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "gogs.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: "Asia/Shanghai"
+            - name: SOCAT_LINK
+              value: "false"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+            - name: ssh
+              containerPort: 22
+              protocol: TCP
+          volumeMounts:
+            - name: gogs-data
+              mountPath: /data
+          securityContext:
+            privileged: true
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- if not .Values.persistence.enabled }}
+      volumes:
+        - name: gogs-data
+          emptyDir: {}
+{{- end }}
+{{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: gogs-data
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+             {{- if .Values.persistence.storageClass }}
+              {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+              {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+              {{- end }}
+             {{- end }}
+{{- end }}

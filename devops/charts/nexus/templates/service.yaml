@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexus.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    helm.sh/chart: {{ include "nexus.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexus.fullname" . }}-docker-push
+  labels:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    helm.sh/chart: {{ include "nexus.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.serviceDockPush.type }}
+  ports:
+    - port: {{ .Values.serviceDockPush.port }}
+      targetPort: docker-push
+      protocol: TCP
+      name: docker-push
+  selector:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexus.fullname" . }}-docker-pull
+  labels:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    helm.sh/chart: {{ include "nexus.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.serviceDockPull.type }}
+  ports:
+    - port: {{ .Values.serviceDockPull.port }}
+      targetPort: docker-pull
+      protocol: TCP
+      name: docker-pull
+  selector:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

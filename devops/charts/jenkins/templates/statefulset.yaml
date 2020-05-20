@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "jenkins.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "jenkins.name" . }}
+    helm.sh/chart: {{ include "jenkins.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "jenkins.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: {{ template "jenkins.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "jenkins.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: "Asia/Shanghai"
+            - name: JAVA_OPTS
+              value: "{{ .Values.env.JAVA_OPTS}} "
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /root/.jenkins
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+ {{- if not .Values.persistence.enabled }}
+      volumes:
+        - name: jenkins-data
+          emptyDir: {}
+{{- end }}
+{{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: jenkins-data
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+            {{- if .Values.persistence.storageClass }}
+              {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+              {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+              {{- end }}
+            {{- end }}
+{{- end }}

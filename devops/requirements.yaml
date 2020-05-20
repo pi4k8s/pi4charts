@@ -1,0 +1,13 @@
+dependencies:
+  - name: gogs
+    version: 0.1.0
+    repository: charts
+    condition: gogs.enabled
+  - name: nexus
+    version: 0.1.0
+    repository: charts
+    condition: nexus.enabled
+  - name: jenkins
+    version: 0.1.0
+    repository: charts
+    condition: jenkins.enabled

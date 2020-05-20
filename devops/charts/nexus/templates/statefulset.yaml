@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nexus.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "nexus.name" . }}
+    helm.sh/chart: {{ include "nexus.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "nexus.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: {{ template "nexus.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "nexus.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: "Asia/Shanghai"
+            - name: JVM_MINIMUM_MEMORY
+              value: "{{ .Values.env.jvmMinimunMemory }}"
+            - name: JVM_MAXIMUM_MEMORY
+              value: "{{ .Values.env.jvmMaximumMemory }}"
+            - name: JVM_MAXDIRECTMEMORYSIZE
+              value: "{{ .Values.env.jvmMaxdirectmemorysize }}"
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+            - name: docker-push
+              containerPort: 8082
+              protocol: TCP
+            - name: docker-pull
+              containerPort: 8083
+              protocol: TCP
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /opt/sonatype-work
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- if not .Values.persistence.enabled }}
+      volumes:
+        - name: nexus-data
+          emptyDir: {}
+{{- end }}
+{{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: nexus-data
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+              {{- if .Values.persistence.storageClass }}
+                {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+                {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+                {{- end }}
+              {{- end }}
+{{- end }}
