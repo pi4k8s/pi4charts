@@ -1,11 +1,11 @@
 apiVersion: v1
 appVersion: "1.0"
-description: devops
-home: http://repo.fastjrun.com/charts
+description: gogs
+home: http://charts.pi4k8s.com
 maintainers:
-  - email: devops@fastjrun.com
+  - email: devops@pi4k8s.com
     name: devops
 name: gogs
 sources:
-  - http://gogs.fastjrun.com/devops/devops
+  - https://github.com/pi4k8s/pi4charts/devops/charts/gogo
 version: 0.1.0

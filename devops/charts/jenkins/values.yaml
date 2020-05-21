@@ -14,11 +14,15 @@ fullnameOverride: ""
 
 
 env:
-  JAVA_OPTS: "-xms1024M -xmx1024M"
+  JAVA_OPTS: "-Xmx1024m -Xms1024m"
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
+
+serviceAgent:
+  type: NodePort
+  port: 50000
 
 ingress:
   enabled: false

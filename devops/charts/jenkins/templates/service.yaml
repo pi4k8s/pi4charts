@@ -17,3 +17,24 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "jenkins.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jenkins.fullname" . }}-agent
+  labels:
+    app.kubernetes.io/name: {{ include "jenkins.name" . }}
+    helm.sh/chart: {{ include "jenkins.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.serviceAgent.type }}
+  ports:
+    - port: {{ .Values.serviceAgent.port }}
+      targetPort: agent
+      protocol: TCP
+      name: agent
+  selector:
+    app.kubernetes.io/name: {{ include "jenkins.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
