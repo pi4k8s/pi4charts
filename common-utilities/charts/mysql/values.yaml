@@ -1,0 +1,77 @@
+# Default values for mysql.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: mrxinwang/mysql_arm64_updated
+  tag: 5.7
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3306
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+root_password: root
+
+config:
+  binlog_cache_size: 1M
+  expire_logs_days: 7
+  innodb_lock_wait_timeout: 500
+  innodb_log_file_size: 2G
+  max_allowed_packet: 100M
+  lower_case_table_names: 1
+  max_innodb_buffer_pool_size: 1G
+  max_connection: 300
+  wait_timeout: 1800
+  interactive_timeout: 28800
+  encoding: utf8
+
+
+
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  # storageClass: "-"

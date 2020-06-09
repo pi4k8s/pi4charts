@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: "1.0"
+description: devops
+home: http://charts.pi4k8s.com
+maintainers:
+  - email: devops@pi4k8s.com
+    name: devops
+name: common-utilities
+sources:
+  - https://github.com/pi4k8s/pi4charts/common-utilities
+version: 0.1.0
