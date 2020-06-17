@@ -1,2 +1,4 @@
 mysql:
   enabled: false
+mysql-test:
+  enabled: false
