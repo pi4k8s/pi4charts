@@ -1,0 +1,15 @@
+dependencies:
+  - name: mysqld-monitor
+    version: 0.1.0
+    repository: charts
+    condition: mysqld-monitor.enabled
+  - name: mysqld-monitor
+    alias: mysqld-monitor-a
+    version: 0.1.0
+    repository: charts
+    condition: mysqld-monitor-a.enabled
+  - name: mysqld-monitor
+    alias: mysqld-monitor-b
+    version: 0.1.0
+    repository: charts
+    condition: mysqld-monitor-b.enabled

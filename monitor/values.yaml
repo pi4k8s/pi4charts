@@ -1,0 +1,6 @@
+mysqld-monitor:
+  enabled: false
+mysqld-monitor-A:
+  enabled: false
+mysqld-monitor-B:
+  enabled: false
