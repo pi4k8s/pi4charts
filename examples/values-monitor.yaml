@@ -1,0 +1,43 @@
+mysqld:
+  enabled: true
+  image:
+    repository: prom/mysqld-exporter-linux-arm64
+    tag: v0.12.1
+
+  env:
+    data_source_name: root:fastjrun1234@(common-utilities-mysql:3306)/
+
+mysqld-a:
+  enabled: true
+  env:
+    data_source_name: root:fastjrun1234@(common-utilities-a-mysql:3306)/
+
+mysqld-b:
+  enabled: true
+  env:
+    data_source_name: root:fastjrun1234@(common-utilities-b-mysql:3306)/
+
+redis:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: crisidev/redis-exporter
+    tag: linux-arm64
+    pullPolicy: IfNotPresent
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  env:
+    redis_addr: common-utilities-redis:6379
+
+  service:
+    type: ClusterIP
+    port: 9121
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
