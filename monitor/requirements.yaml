@@ -1,15 +1,21 @@
 dependencies:
   - name: mysqld-monitor
+    alias: mysqld
     version: 0.1.0
     repository: charts
-    condition: mysqld-monitor.enabled
+    condition: mysqld.enabled
   - name: mysqld-monitor
-    alias: mysqld-monitor-a
+    alias: mysqld-a
     version: 0.1.0
     repository: charts
-    condition: mysqld-monitor-a.enabled
+    condition: mysqld-a.enabled
   - name: mysqld-monitor
-    alias: mysqld-monitor-b
+    alias: mysqld-b
     version: 0.1.0
     repository: charts
-    condition: mysqld-monitor-b.enabled
+    condition: mysqld-b.enabled
+  - name: redis-monitor
+    alias: redis
+    version: 0.1.0
+    repository: charts
+    condition: redis.enabled

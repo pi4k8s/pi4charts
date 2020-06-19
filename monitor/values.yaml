@@ -1,6 +1,8 @@
-mysqld-monitor:
+mysqld:
   enabled: false
-mysqld-monitor-A:
+mysqld-a:
   enabled: false
-mysqld-monitor-B:
+mysqld-b:
+  enabled: false
+redis:
   enabled: false
