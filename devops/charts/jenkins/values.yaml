@@ -23,6 +23,7 @@ service:
 serviceAgent:
   type: NodePort
   port: 50000
+  nodePort: 50000
 
 ingress:
   enabled: false

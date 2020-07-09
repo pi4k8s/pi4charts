@@ -35,6 +35,9 @@ spec:
       targetPort: agent
       protocol: TCP
       name: agent
+      {{- if (and (eq .Values.serviceAgent.type "NodePort") (not (empty .Values.serviceAgent.nodePort))) }}
+      nodePort: {{ .Values.serviceAgent.nodePort }}
+      {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "jenkins.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
