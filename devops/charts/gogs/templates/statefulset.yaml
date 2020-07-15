@@ -20,6 +20,9 @@ spec:
   serviceName: {{ template "gogs.fullname" . }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/sqlite: {{ include (print $.Template.BasePath "/configmap-sqlite.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "gogs.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -41,12 +44,33 @@ spec:
               containerPort: 22
               protocol: TCP
           volumeMounts:
+            - name: gogs-config
+              mountPath: /data/gogs/conf/app.ini
+              subPath: app.ini
             - name: gogs-data
               mountPath: /data
           securityContext:
             privileged: true
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+      initContainers:
+        - image: pi4k8s/sqlite3:3.22.0-ubuntu-18-04
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -e /data/gogs/{{ $.Values.config.database.path }} ]; then
+                mkdir -p /data/gogs/data
+                sqlite3 /data/gogs/{{ $.Values.config.database.path }} </data/gogs.sql
+              fi
+          imagePullPolicy: Always
+          name: sqlite3
+          volumeMounts:
+            - name: gogs-sqlite
+              mountPath: /data/gogs.sql
+              subPath: gogs.sql
+            - name: gogs-data
+              mountPath: /data
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -59,6 +83,13 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      volumes:
+        - name: gogs-sqlite
+          configMap:
+            name: {{ template "gogs.fullname" $ }}-sqlite
+        - name: gogs-config
+          configMap:
+            name: {{ template "gogs.fullname" $ }}-config
 {{- if not .Values.persistence.enabled }}
       volumes:
         - name: gogs-data

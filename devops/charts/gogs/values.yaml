@@ -19,6 +19,21 @@ serviceSSH:
   type: ClusterIP
   port: 22
 
+config:
+  appName: Gogs
+  database:
+    path: /data/gogs.db
+  server:
+    domain: sshgogs.ub.com
+    rootUrl: http://gogs.ub.com
+  mailer:
+    host: smtp.yeah.net:111
+    from:  email@example.com
+    user:  email@example.com
+    passwd: passwd
+  security:
+    securityKey: ox9xSFKsQyXFHOJ
+
 ingress:
   enabled: false
   annotations: {}

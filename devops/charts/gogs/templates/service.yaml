@@ -31,9 +31,9 @@ spec:
   type: {{ .Values.serviceSSH.type }}
   ports:
     - port: {{ .Values.serviceSSH.port }}
-      targetPort: tcp
+      targetPort: ssh
       protocol: TCP
-      name: http
+      name: ssh
   selector:
     app.kubernetes.io/name: {{ include "gogs.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
