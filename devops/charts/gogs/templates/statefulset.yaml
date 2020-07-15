@@ -54,7 +54,7 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       initContainers:
-        - image: pi4k8s/sqlite3:3.22.0-ubuntu-18-04
+        - image: {{ .Values.initImage.repository }}
           command:
             - sh
             - -c

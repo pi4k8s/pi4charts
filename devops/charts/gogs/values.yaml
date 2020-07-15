@@ -5,11 +5,12 @@
 replicaCount: 1
 
 image:
-  annotations:
-    security.alpha.kubernetes.io/unsafe-sysctls: net.core.somaxconn=65535
   repository: autarchprinceps/gogs-arm64
   tag: latest
   pullPolicy: IfNotPresent
+
+initImage:
+  repository: pi4k8s/sqlite3:3.22.0-ubuntu-18-04
 
 service:
   type: ClusterIP
@@ -22,7 +23,7 @@ serviceSSH:
 config:
   appName: Gogs
   database:
-    path: /data/gogs.db
+    path: data/gogs.db
   server:
     domain: sshgogs.ub.com
     rootUrl: http://gogs.ub.com
