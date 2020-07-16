@@ -25,10 +25,10 @@ config:
   database:
     path: data/gogs.db
   server:
-    domain: sshgogs.ub.com
-    rootUrl: http://gogs.ub.com
+    domain: devops-gogs-ssh
+    rootUrl: http://devops-gogs:3000
   mailer:
-    host: smtp.yeah.net:111
+    host: smtp.yeah.net:25
     from:  email@example.com
     user:  email@example.com
     passwd: passwd
