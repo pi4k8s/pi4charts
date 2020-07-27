@@ -64,7 +64,7 @@ spec:
       volumes:
         - name: redis-config
           configMap:
-            name: {{ template "redis.fullname" $ }}
+            name: {{ template "redis.fullname" $ }}-config
             items:
               - key: redis.conf
                 path: redis.conf

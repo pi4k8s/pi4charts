@@ -5,7 +5,7 @@ metadata:
     app: {{ template "mysql.fullname" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     release: {{ .Release.Name }}
-  name:  {{ template "mysql.fullname" . }}
+  name:  {{ template "mysql.fullname" . }}-config
 
 data:
     my.cnf: |

@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: mysql-config
           configMap:
-            name: {{ template "mysql.fullname" $ }}
+            name: {{ template "mysql.fullname" $ }}-config
             items:
               - key: my.cnf
                 path: my.cnf
