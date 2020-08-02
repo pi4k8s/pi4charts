@@ -35,6 +35,7 @@ data:
 
         wait_timeout = {{ $.Values.config.wait_timeout }}
         interactive_timeout = {{ $.Values.config.interactive_timeout }}
+        sql_mode= {{ $.Values.config.sql_mode }}
 
         #Encoding
         collation-server = {{ $.Values.config.encoding }}_bin
