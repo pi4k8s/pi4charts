@@ -1,8 +1,0 @@
-mysqld:
-  enabled: false
-mysqld-a:
-  enabled: false
-mysqld-b:
-  enabled: false
-redis:
-  enabled: false
