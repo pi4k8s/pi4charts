@@ -13,5 +13,18 @@ helm install -n mysql \
 common-utilities/charts/mysql \
 -f examples/values-mysql-arm64v8.yaml
 ```
+
+
+
+### redis-ha
+基于 stable/redis-ha-4.4.4 调整 
+ - 删除haproxy
+ - 支持redis的service设置为NodePort
+ 
+ ```shell script
+helm install -n mysql \
+common-utilities/charts/mysql \
+-f examples/values-mysql-arm64v8.yaml
+```
  
  
