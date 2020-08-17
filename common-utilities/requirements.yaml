@@ -3,17 +3,8 @@ dependencies:
     version: 0.1.0
     repository: charts
     condition: mysql.enabled
-  - name: mysql
-    alias: mysql-1
-    version: 0.1.0
-    repository: charts
-    condition: mysql-1.enabled
-  - name: mysql
-    alias: mysql-2
-    version: 0.1.0
-    repository: charts
-    condition: mysql-2.enabled
-  - name: redis
+  - name: redis-ha
+    alias: redis
     version: 0.1.0
     repository: charts
     condition: redis.enabled

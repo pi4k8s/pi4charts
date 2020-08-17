@@ -1,8 +1,4 @@
 mysql:
   enabled: false
-mysql-1:
-  enabled: false
-mysql-2:
-  enabled: false
 redis:
   enabled: false

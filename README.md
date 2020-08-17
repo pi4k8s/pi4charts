@@ -1,6 +1,15 @@
 # pi4charts
 
 ## common-utilties
+集成myql和redis-ha
+
+ 
+ ```shell script
+helm install -n comon-utilities \
+common-utilities \
+-f examples/values-common-utilities-arm64v8.yaml
+```
+
 
 ### mysql
 基于 stable/mysql-1.6.6 调整 
@@ -22,9 +31,9 @@ common-utilities/charts/mysql \
  - 支持redis的service设置为NodePort
  
  ```shell script
-helm install -n mysql \
-common-utilities/charts/mysql \
--f examples/values-mysql-arm64v8.yaml
+helm install -n redis-ha \
+common-utilities/charts/redis-ha \
+-f examples/values-redis-ha-arm64v8.yaml
 ```
  
  
