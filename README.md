@@ -59,7 +59,7 @@ monitor/charts/mysqld-monitor \
 可以支持监控单独部署的redis服务
 
  ```shell script
-helm install -n mysqld-monitor \
-monitor/charts/mysqld-monitor \
---set env.data_source_name=root:abc123@(common-utilities-mysql:3306)/
+helm install -n redis-monitor \
+monitor/charts/redis-monitor \
+--set env.redis_addr=common-utilities-redis:6379
 ```
