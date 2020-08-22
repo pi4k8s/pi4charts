@@ -1,0 +1,180 @@
+mysql:
+  enabled: true
+  ## mysql image version
+  ## ref: https://hub.docker.com/r/library/mysql/tags/
+  ##
+  image: "biarms/mysql"
+  imageTag: "5.7.30-linux-arm64v8"
+
+  busybox:
+    image: "arm64v8/busybox"
+    tag: "1.32"
+
+  ## Specify password for root user
+  ##
+  ## Default: random 10 character string
+  mysqlRootPassword: abc123
+
+  persistence:
+    enabled: true
+    ## database data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    annotations: {}
+
+  resources:
+    requests:
+      memory: 1.5Gi
+      cpu: 500m
+
+  # Custom mysql configuration files used to override default mysql settings
+  configurationFiles:
+    mysql.cnf: |-
+      [mysqld]
+      ##
+      server_id=1
+      ##
+      binlog-ignore-db=mysql
+      ##
+      log-bin=replicas-mysql-bin
+      ##
+      binlog_cache_size=1M
+      ##
+      binlog_format=mixed
+      ##
+      expire_logs_days=7
+
+      max_allowed_packet=512M
+      max_connections=200
+      max_connect_errors=10000
+      #Encoding
+      collation-server = utf8mb4_bin
+      init-connect='SET NAMES utf8mb4'
+      character-set-server = utf8mb4
+
+      log_error=error.log
+
+      [client]
+      default-character-set = utf8
+
+  metrics:
+    enabled: true
+    image: pi4k8s/prom-mysqld-exporter
+    imageTag: v0.12.1
+
+    serviceMonitor:
+      enabled: true
+
+  service:
+
+    type: NodePort
+    port: 3306
+    nodePort: 3306
+    # loadBalancerIP:
+
+
+  ## Init container resources defaults
+  initContainer:
+    resources:
+      requests:
+        memory: 10Mi
+        cpu: 10m
+redis:
+  enabled: true
+  image:
+    repository: arm64v8/redis
+    tag: 3.2.12
+
+  ## replicas number for each component
+  replicas: 2
+
+
+  ## Custom service
+  service:
+    type: NodePort
+    ## Specifies whether redis service exposed outer from k8s
+    nodePort: 6379
+
+  ## Redis specific configuration options
+  redis:
+    port: 6379
+    masterGroupName: "mymaster"       # must match ^[\\w-\\.]+$) and can be templated
+    config:
+      ## Additional redis conf options can be added below
+      ## For all available options see http://download.redis.io/redis-stable/redis.conf
+      ## min-replicas-to-write and min-replicas-max-lag not supported by redis3.x redis4.x;we can disable them by set their values to zero
+      # Value in seconds
+      min-replicas-to-write:
+      min-replicas-max-lag:     # Value in seconds
+      min-slaves-to-write: 1
+      min-slaves-max-lag: 5
+      # Value in seconds
+      maxmemory: "0"       # Max memory to use for each redis instance. Default is unlimited.
+      maxmemory-policy: "volatile-lru"  # Max memory policy to use for each redis instance. Default is volatile-lru.
+      # Determines if scheduled RDB backups are created. Default is false.
+      # Please note that local (on-disk) RDBs will still be created when re-syncing with a new slave. The only way to prevent this is to enable diskless replication.
+      save: "900 1"
+      # When enabled, directly sends the RDB over the wire to slaves, without using the disk as intermediate storage. Default is false.
+      repl-diskless-sync: "yes"
+      rdbcompression: "yes"
+      rdbchecksum: "yes"
+    customConfig: |-
+      dir "/data"
+      port {{ .Values.redis.port }}
+      min-slaves-to-write 1
+      min-slaves-max-lag 5
+      maxmemory 0
+      maxmemory-policy volatile-lru
+      save 900 1
+      repl-diskless-sync yes
+      rdbcompression yes
+      rdbchecksum yes
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 100m
+      limits:
+        memory: 1.5Gi
+
+
+
+  # Prometheus exporter specific configuration options
+  exporter:
+    enabled: true
+    image: crisidev/redis-exporter
+    tag: linux-arm64
+
+    serviceMonitor:
+      # When set true then use a ServiceMonitor to configure scraping
+      enabled: true
+      # Set the namespace the ServiceMonitor should be deployed
+      # namespace: monitoring
+      # Set how frequently Prometheus should scrape
+      # interval: 30s
+      # Set path to redis-exporter telemtery-path
+      # telemetryPath: /metrics
+      # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
+      # labels: {}
+      # Set timeout for scrape
+      # timeout: 10s
+
+  persistentVolume:
+    enabled: true
+    ## redis-ha data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    accessModes:
+      - ReadWriteOnce
+    size: 3Gi

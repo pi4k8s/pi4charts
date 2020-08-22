@@ -1,0 +1,4 @@
+mysqld:
+  enabled: false
+redis:
+  enabled: false

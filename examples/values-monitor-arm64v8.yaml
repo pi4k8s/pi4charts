@@ -1,0 +1,18 @@
+mysqld:
+  enabled: true
+  image:
+    repository: prom/mysqld-exporter-linux-arm64
+    tag: v0.12.1
+  env:
+    data_source_name: root:abc123@(common-utilities-mysql:3306)/
+
+redis:
+  enabled: true
+
+  image:
+    repository: crisidev/redis-exporter
+    tag: linux-arm64
+
+  env:
+    redis_addr: common-utilities-redis:6379
+

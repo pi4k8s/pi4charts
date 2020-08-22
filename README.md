@@ -37,3 +37,29 @@ common-utilities/charts/redis-ha \
 ```
  
  
+## monitor
+集成mysql和redis监控服务，可以支持单独部署的mysql服务和redis服务
+```shell script
+helm install -n monitor \
+monitor \
+-f examples/values-monitor-arm64v8.yaml
+```
+
+
+### mysqld-monitor
+可以支持监控单独部署的mysql服务
+
+ ```shell script
+helm install -n mysqld-monitor \
+monitor/charts/mysqld-monitor \
+--set env.data_source_name=root:abc123@(common-utilities-mysql:3306)/
+```
+
+### mysqld-monitor
+可以支持监控单独部署的redis服务
+
+ ```shell script
+helm install -n mysqld-monitor \
+monitor/charts/mysqld-monitor \
+--set env.data_source_name=root:abc123@(common-utilities-mysql:3306)/
+```
