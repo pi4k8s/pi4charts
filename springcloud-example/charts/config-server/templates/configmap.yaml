@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "config-server.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  name:  {{ template "config-server.fullname" . }}-bootstrap
+
+data:
+  bootstrap.properties: |
+    spring.cloud.config.server.git.uri={{ .Values.bootstarp.git.uri }}
+    spring.cloud.config.server.git.search-paths={{ .Values.bootstarp.git.searchPaths }}
+    username={{ .Values.bootstarp.git.username }}
+    password={{ .Values.bootstarp.git.password }}

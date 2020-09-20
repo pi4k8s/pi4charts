@@ -1,0 +1,16 @@
+eureka:
+  enabled: false
+zipkin-server:
+  enabled: false
+config-server:
+  enabled: false
+provider:
+  enabled: false
+consumer:
+  enabled: false
+eureka:
+  enabled: false
+hystrix-dashboard:
+  enabled: false
+gateway:
+  enabled: false

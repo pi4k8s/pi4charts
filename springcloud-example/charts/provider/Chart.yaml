@@ -1,0 +1,10 @@
+apiVersion: v1
+appVersion: "1.0"
+description: provider
+maintainers:
+  - email: devops@pi4k8s.com
+    name: devops
+name: provider
+sources:
+  - https://github.com/pi4k8s/pi4charts/springcloud-example/provider
+version: 0.1.0

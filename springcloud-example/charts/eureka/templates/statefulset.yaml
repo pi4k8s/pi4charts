@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "eureka.fullname" . }}
+  labels:
+{{ include "eureka.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "eureka.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: {{ template "eureka.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "eureka.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "eureka.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: APP_NAME
+            value: "eureka"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: TZ
+            value: "Asia/Shanghai"
+          - name: JAVA_OPTS
+            value: "{{ .Values.env.JAVA_OPTS }}"
+          - name: APP_OPTS
+            value: "
+                 --eureka.instance.hostname=${POD_NAME}.${APP_NAME}
+                 --registerWithEureka={{ .Values.env.APP_OPTS.registerWithEureka }}
+                 --fetchRegistry={{ .Values.env.APP_OPTS.fetchRegistry }}
+                 --eviction-interval-timer-in-ms: {{ .Values.env.APP_OPTS.evictionIntervalTimerInMs }}
+                 --eureka.instance.preferIpAddress={{ .Values.env.APP_OPTS.preferIpAddress }}
+                 --eureka.client.serviceUrl.defaultZone=http://eureka-0.${APP_NAME}:8080/eureka/,http://eureka-1.${APP_NAME}:8080/eureka/,http://eureka-2.${APP_NAME}:8080/eureka/
+                 "
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20    #延迟加载时间
+            periodSeconds: 5           #重试时间间隔
+            timeoutSeconds: 10         #超时时间设置
+            failureThreshold: 5        #探测失败的重试次数
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20    #延迟加载时间
+            periodSeconds: 5           #重试时间间隔
+            timeoutSeconds: 10         #超时时间设置
+            failureThreshold: 5        #探测失败的重试次数
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

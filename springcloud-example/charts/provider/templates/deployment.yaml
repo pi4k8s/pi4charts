@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "provider.fullname" . }}
+  labels:
+{{ include "provider.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "provider.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "provider.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "provider.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: APP_NAME
+            value: "provider"
+          - name: TZ
+            value: "Asia/Shanghai"
+          - name: JAVA_OPTS
+            value: "{{ .Values.env.JAVA_OPTS }}"
+          - name: APP_OPTS
+            value: "
+               --provider.name=${APP_NAME}
+               --registerWithEureka={{ .Values.env.APP_OPTS.registerWithEureka }}
+               --eureka.instance.preferIpAddress={{ .Values.env.APP_OPTS.preferIpAddress }}
+               --eureka.client.serviceUrl.defaultZone={{ .Values.env.APP_OPTS.eurekaAddress }}
+               --logging.level.org.springframework.cloud.sleuth={{ .Values.env.APP_OPTS.logging.level.sleuth }}
+               --spring.zipkin.base-url={{ .Values.env.APP_OPTS.zipkin.baseUrl }}
+               --spring.zipkin.sender.type={{ .Values.env.APP_OPTS.zipkin.senderType }}
+               --spring.sleuth.sampler.probability={{ .Values.env.APP_OPTS.sleuth.samplerProbability }}
+               "
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: {{ template "provider.fullname" . }}-bootstrap
+              mountPath: /config/bootstrap.properties
+              subPath: bootstrap.properties
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: {{ template "provider.fullname" . }}-bootstrap
+          configMap:
+            name: {{ template "provider.fullname" . }}-bootstrap
+

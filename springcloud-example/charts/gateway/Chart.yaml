@@ -1,0 +1,10 @@
+apiVersion: v1
+appVersion: "1.0"
+description: gateway
+maintainers:
+  - email: devops@pi4k8s.com
+    name: devops
+name: gateway
+sources:
+  - https://github.com/pi4k8s/pi4charts/gateway
+version: 0.1.0

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "provider.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  name:  {{ template "provider.fullname" . }}-bootstrap
+
+data:
+  bootstrap.properties: |
+    spring.cloud.config.name={{ .Values.bootstarp.config.name }}
+    spring.cloud.config.profile={{ .Values.bootstarp.config.profile }}
+    spring.cloud.config.uri={{ .Values.bootstarp.config.uri }}

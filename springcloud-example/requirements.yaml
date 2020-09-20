@@ -1,0 +1,29 @@
+dependencies:
+  - name: eureka
+    version: 0.1.0
+    repository: charts
+    condition: eureka.enabled
+  - name: zipkin-server
+    version: 0.1.0
+    repository: charts
+    condition: zipkin-server.enabled
+  - name: config-server
+    version: 0.1.0
+    repository: charts
+    condition: config-server.enabled
+  - name: provider
+    version: 0.1.0
+    repository: charts
+    condition: provider.enabled
+  - name: consumer
+    version: 0.1.0
+    repository: charts
+    condition: consumer.enabled
+  - name: hystrix-dashboard
+    version: 0.1.0
+    repository: charts
+    condition: hystrix-dashboard.enabled
+  - name: gateway
+    version: 0.1.0
+    repository: charts
+    condition: gateway.enabled

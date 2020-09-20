@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "hystrix-dashboard.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  name:  {{ template "hystrix-dashboard.fullname" . }}-application
+
+data:
+  application-k8s.properties: |
+    spring.application.name=Turbine
+    server.port=9902
+    feign.hystrix.enabled=true
+    registerWithEureka={{ .Values.env.APP_OPTS.registerWithEureka }}
+    eureka.instance.preferIpAddress={{ .Values.env.APP_OPTS.preferIpAddress }}
+    eureka.client.serviceUrl.defaultZone={{ .Values.env.APP_OPTS.eurekaAddress }}
+    feign.hystrix.enabled={{ .Values.env.APP_OPTS.hystrixEnabled }}
+    turbine.appConfig={{ .Values.env.APP_OPTS.turbine.appConfig }}
+    turbine.aggregator.clusterConfig={{ .Values.env.APP_OPTS.turbine.aggregator.clusterConfig }}
+    turbine.clusterNameExpression={{ .Values.env.APP_OPTS.turbine.clusterNameExpression }}
+    turbine.combine-host-port={{ .Values.env.APP_OPTS.turbine.combineHostPort }}
