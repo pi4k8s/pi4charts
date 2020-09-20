@@ -5,7 +5,7 @@
 replicaCount: 3
 
 image:
-  repository: pi4k8s/spriing-cloud-eureka
+  repository: pi4k8s/spring-cloud-eureka
   tag: 0.0.1
   pullPolicy: IfNotPresent
 
