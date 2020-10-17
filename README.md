@@ -55,7 +55,7 @@ monitor/charts/mysqld-monitor \
 --set env.data_source_name=root:abc123@(common-utilities-mysql:3306)/
 ```
 
-### mysqld-monitor
+### redis-monitor
 可以支持监控单独部署的redis服务
 
  ```shell script
